@@ -2,16 +2,12 @@ import React from 'react';
 import { Container, Typography, Box, Avatar, Grid, Paper } from '@mui/material';
 import axios from 'axios';
 
-async function MyPage(email) {
+async function MyPage() {
   
-   
-    const res = await axios.get("http://localhost:3100/user/session/${email}");
+    const res = await axios.post("http://localhost:3100/");
     console.log(res);
 
   
-
-
-
   return (
     <Container maxWidth="md">
       <Box

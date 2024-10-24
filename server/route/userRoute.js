@@ -17,12 +17,16 @@ const connection = require('../db');
     .post((req, res)=>{
         const { email, password } = req.body;
         const query = 'SELECT * FROM TBL_USER WHERE email = ? AND password = ?';
+        const query2 = 'SELECT * FROM TBL_USER WHERE email = ?';
       
         connection.query(query, [email, password], (err, results) => {
           console.log(results);
           if (err) throw err;
           if (results.length > 0) {
+            connection.query(query2, [email], (err, results) => {
             res.json({ success: true, user : results[0] });
+            })
+           
           } else {
             // 로그인 실패
             res.json({ success: false, message: '실패!' });
