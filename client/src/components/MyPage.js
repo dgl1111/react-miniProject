@@ -1,11 +1,50 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Container, Typography, Box, Avatar, Grid, Paper } from '@mui/material';
 import axios from 'axios';
+import { useEffect } from 'react';
+import { jwtDecode } from "jwt-decode";
+import { useNavigate } from 'react-router-dom';
 
-async function MyPage() {
+  function MyPage() {
+    const [userInfo, setUserInfo] = useState([]);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+      if(localStorage.getItem("token") == null){
+        navigate("/login");
+      }
+      fnList();
+      console.log(userInfo);
+    },[]);
+    
+    async function fnList() {
+      const token = localStorage.getItem("token");
+      const dToken = jwtDecode(token);
+      const email = dToken.email;
+
+      try {
+        const res = await axios.post("http://localhost:3100/user/info", {email});
+        //console.log(res);
+        console.log(res.data.success);
+        if(res.data.success){
+          setUserInfo(res.data.list);
+          //console.log(res.data.list);
+          console.log(userInfo)
+        }else{
+          console.log("에러");
+        }
+      } catch (err) {
+        console.log("에러");
+        
+      }
+    }
   
-    const res = await axios.post("http://localhost:3100/");
-    console.log(res);
+  
+  
+
+  
+
+  
 
   
   return (
@@ -26,10 +65,8 @@ async function MyPage() {
               src="https://images.unsplash.com/photo-1551963831-b3b1ca40c98e" // 프로필 이미지 경로
               sx={{ width: 100, height: 100, marginBottom: 2 }}
             />
-            <Typography variant="h5">홍길동</Typography>
-            <Typography variant="body2" color="text.secondary">
-              @honggildong
-            </Typography>
+            <Typography variant="h5">{userInfo.name}</Typography>
+            <Typography variant="body2" color="text.secondary">{userInfo.email}</Typography>
           </Box>
           <Grid container spacing={2} sx={{ marginTop: 2 }}>
             <Grid item xs={4} textAlign="center">

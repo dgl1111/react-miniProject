@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 
+
 function Join() {
   const emailRef = useRef();
   const passwordRef = useRef();
@@ -22,7 +23,7 @@ function Join() {
     const name = nameRef.current.value;
     const birth = birthRef.current.value;
 
-    if(password != confirmPwd){
+    if(password !== confirmPwd){
       alert("비밀번호가 다릅니다.")
       return;
 

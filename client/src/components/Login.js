@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { TextField, Button, Container, Typography, Box } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { Email, Password } from '@mui/icons-material';
+
 
 function Login() {
   const emailRef = useRef();
@@ -10,6 +10,10 @@ function Login() {
   const navigate = useNavigate();
 
   useEffect(()=>{
+    console.log(localStorage.getItem("token"));
+    if(localStorage.getItem("token") != null){
+      navigate("/main");
+    }
     emailRef.current.focus();
   }, []);
 
@@ -22,8 +26,7 @@ function Login() {
 
         if(res.data.success){
           console.log(res.data);
-          sessionStorage.setItem('user', res.data.user.email)
-          console.log(sessionStorage.getItem('user'));
+          localStorage.setItem("token", res.data.token);
           navigate("/main")
         }else{
           alert("다시")
