@@ -12,24 +12,27 @@ import { useNavigate } from 'react-router-dom';
     useEffect(() => {
       if(localStorage.getItem("token") == null){
         navigate("/login");
+      }else{
+        fnList();
       }
-      fnList();
-      console.log(userInfo);
+      //console.log("userInfo => ", userInfo);
     },[]);
     
     async function fnList() {
       const token = localStorage.getItem("token");
       const dToken = jwtDecode(token);
       const email = dToken.email;
+      
+      console.log(email);
 
       try {
         const res = await axios.post("http://localhost:3100/user/info", {email});
         //console.log(res);
-        console.log(res.data.success);
+        console.log("res.data.success =>", res.data.success);
         if(res.data.success){
           setUserInfo(res.data.list);
-          //console.log(res.data.list);
-          console.log(userInfo)
+          console.log("res.data.list =>", res.data.list);
+          console.log("userInfo => ", userInfo)
         }else{
           console.log("에러");
         }
@@ -38,14 +41,6 @@ import { useNavigate } from 'react-router-dom';
         
       }
     }
-  
-  
-  
-
-  
-
-  
-
   
   return (
     <Container maxWidth="md">
@@ -65,7 +60,7 @@ import { useNavigate } from 'react-router-dom';
               src="https://images.unsplash.com/photo-1551963831-b3b1ca40c98e" // 프로필 이미지 경로
               sx={{ width: 100, height: 100, marginBottom: 2 }}
             />
-            <Typography variant="h5">{userInfo.name}</Typography>
+            <Typography variant="h5">{userInfo.name}</Typography> 
             <Typography variant="body2" color="text.secondary">{userInfo.email}</Typography>
           </Box>
           <Grid container spacing={2} sx={{ marginTop: 2 }}>

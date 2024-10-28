@@ -2,6 +2,7 @@ import React from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import { Box, CssBaseline } from '@mui/material';
 import Login from './components/Login';
+import Logout from './components/Logout';
 import Join from './components/Join'; // Join으로 변경
 import Feed from './components/Feed';
 import Register from './components/Register';
@@ -21,6 +22,7 @@ function App() {
           <Route path="/" element={<Feed />} />
           <Route path="/join" element={<Join />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/logout" element={<Logout />} />
           <Route path="/register" element={<Register />} />
           <Route path="/mypage" element={<MyPage />} />
         </Routes>

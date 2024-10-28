@@ -1,25 +1,47 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   TextField,
   Button,
   Container,
   Typography,
   Box,
-  InputLabel,
-  FormControl,
-  Select,
-  MenuItem,
   Avatar,
   IconButton,
 } from '@mui/material';
 import { PhotoCamera } from '@mui/icons-material';
+import axios from 'axios';
 
 function Register() {
   const [file, setFile] = React.useState(null);
+  const [content, setContent] = useState('');
 
   const handleFileChange = (event) => {
     setFile(event.target.files[0]);
   };
+
+  const handleRegister = async () => {
+    const formData = new FormData();
+    formData.append('content', content);
+
+    if(file){
+      formData.append('img_path', file);
+    }
+
+    try {
+      const res = await axios.post("http://localhost:3100/feed", formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data', // 헤더 설정
+        },
+      });
+
+      console.log(res.data);
+      
+    } catch (error) {
+      console.log("error");
+    }
+  };
+
+
 
   return (
     <Container maxWidth="sm">
@@ -35,16 +57,6 @@ function Register() {
           등록
         </Typography>
 
-        <FormControl fullWidth margin="normal">
-          <InputLabel>카테고리</InputLabel>
-          <Select defaultValue="" label="카테고리">
-            <MenuItem value={1}>일상</MenuItem>
-            <MenuItem value={2}>여행</MenuItem>
-            <MenuItem value={3}>음식</MenuItem>
-          </Select>
-        </FormControl>
-
-        <TextField label="제목" variant="outlined" margin="normal" fullWidth />
         <TextField
           label="내용"
           variant="outlined"
@@ -52,9 +64,11 @@ function Register() {
           fullWidth
           multiline
           rows={4}
+          value={content}
+          onChange={(e)=> setContent(e.target.value)}
         />
 
-        <Box display="flex" alignItems="center" margin="normal" fullWidth>
+        <Box display="flex" alignItems="center" margin="normal" width="100%">
           <input
             accept="image/*"
             style={{ display: 'none' }}
@@ -79,7 +93,11 @@ function Register() {
           </Typography>
         </Box>
 
-        <Button variant="contained" color="primary" fullWidth style={{ marginTop: '20px' }}>
+        <Button 
+          variant="contained" 
+          color="primary" 
+          fullWidth style={{ marginTop: '20px' }}
+          onClick={handleRegister}>
           등록하기
         </Button>
       </Box>

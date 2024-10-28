@@ -128,7 +128,7 @@ const ROUND = 10;
                 // res.status(500).send('서버 오류');
                 return;
             }
-            res.json( {success: true, list : results }); 
+            res.json( {success: true, list : results[0] }); 
         });
     });
    

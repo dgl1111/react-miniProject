@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Grid2,
   AppBar,
@@ -23,28 +23,44 @@ import {
   Avatar,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import axios from 'axios';
 
-const mockFeeds = [
-  {
-    id: 1,
-    title: '게시물 1',
-    description: '이것은 게시물 1의 설명입니다.',
-    image: 'https://images.unsplash.com/photo-1551963831-b3b1ca40c98e',
-  },
-  {
-    id: 2,
-    title: '게시물 2',
-    description: '이것은 게시물 2의 설명입니다.',
-    image: 'https://images.unsplash.com/photo-1521747116042-5a810fda9664',
-  },
-  // 추가 피드 데이터
-];
+// const mockFeeds = [
+//   {
+//     id: 1,
+//     title: '게시물 1',
+//     description: '이것은 게시물 1의 설명입니다.',
+//     image: 'https://images.unsplash.com/photo-1551963831-b3b1ca40c98e',
+//   },
+//   {
+//     id: 2,
+//     title: '게시물 2',
+//     description: '이것은 게시물 2의 설명입니다.',
+//     image: 'https://images.unsplash.com/photo-1521747116042-5a810fda9664',
+//   },
+//   // 추가 피드 데이터
+// ];
 
 function Feed() {
+  const [feeds, setFeeds] = useState([]);
   const [open, setOpen] = useState(false);
   const [selectedFeed, setSelectedFeed] = useState(null);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
+
+  useEffect(()=>{
+    async function fnFeeds(){
+      try {
+        const res = await axios.get("http://localhost:3100/feed");
+        setFeeds(res.data);
+        
+      } catch (error) {
+        console.log("에러");
+      }
+    }
+
+    fnFeeds();
+  }, [])
 
   const handleClickOpen = (feed) => {
     setSelectedFeed(feed);
@@ -80,7 +96,7 @@ function Feed() {
 
       <Box mt={4}>
         <Grid2 container spacing={3}>
-          {mockFeeds.map((feed) => (
+          {feeds.map((feed) => (
             <Grid2 xs={12} sm={6} md={4} key={feed.id}>
               <Card>
                 <CardMedia

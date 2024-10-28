@@ -2,8 +2,17 @@ import React from 'react';
 import { Drawer, List, ListItem, ListItemText, Typography, Toolbar, ListItemIcon } from '@mui/material';
 import { Home, Add, AccountCircle } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 function Menu() {
+  const navigate = useNavigate();
+
+  function fnLogout(){
+    localStorage.clear();
+    navigate("/main");
+}
+
+
   return (
     <Drawer
       variant="permanent"
@@ -39,6 +48,9 @@ function Menu() {
           </ListItemIcon>
           <ListItemText primary="마이페이지" />
         </ListItem>
+        <button onClick={fnLogout}>로그아웃</button>
+          
+        
       </List>
     </Drawer>
   );
