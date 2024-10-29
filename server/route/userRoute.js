@@ -79,7 +79,7 @@ const ROUND = 10;
       const query2 = 'SELECT COUNT(*) AS ISUSERID FROM TBL_USER WHERE userId = ?';
 
       const pwdHash = await bcrypt.hash(password, ROUND);
-      console.log(pwdHash);
+      //console.log(pwdHash);
 
       connection.query(query1, [email], (err, results) => {
         if(err){
@@ -102,7 +102,7 @@ const ROUND = 10;
             }
             else{
               connection.query(query, [name, email, pwdHash, birth, userId], (err, results) => {
-                console.log(results);
+                //console.log(results);
                 if(err){
                   console.error('쿼리 실행 실패:', err);
                   return res.json({success : false, message : "db오류"});
@@ -120,7 +120,7 @@ const ROUND = 10;
     router.route("/info")
     .post((req, res)=>{
       const {email} = req.body;
-      console.log(email);
+      //console.log(email);
         const query = 'SELECT * FROM TBL_USER WHERE email = ?';
         connection.query(query,[email], (err, results) => {
             if (err) {

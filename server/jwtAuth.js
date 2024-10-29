@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
     const token = req.headers.token;
     console.log(req.headers.token);
     if(!token){
-        return res.joson({success : false, message : "로그인 후"})
+        return res.json({success : false, message : "로그인 후"})
     }
     jwt.verify(token, "secret_key", (err, user) => {
         if(err){

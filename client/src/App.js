@@ -7,6 +7,7 @@ import Join from './components/Join'; // Join으로 변경
 import Feed from './components/Feed';
 import Register from './components/Register';
 import MyPage from './components/MyPage';
+import NotPage from './components/NotPage';
 import Menu from './components/Menu'; // Menu로 변경
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
           <Route path="/logout" element={<Logout />} />
           <Route path="/register" element={<Register />} />
           <Route path="/mypage" element={<MyPage />} />
+          <Route path="*" element={<NotPage />} />
         </Routes>
       </Box>
     </Box>

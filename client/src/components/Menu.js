@@ -3,6 +3,10 @@ import { Drawer, List, ListItem, ListItemText, Typography, Toolbar, ListItemIcon
 import { Home, Add, AccountCircle } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import Button from '@mui/material/Button';
+import Stack from '@mui/material/Stack';
+
+
 
 function Menu() {
   const navigate = useNavigate();
@@ -48,7 +52,10 @@ function Menu() {
           </ListItemIcon>
           <ListItemText primary="마이페이지" />
         </ListItem>
-        <button onClick={fnLogout}>로그아웃</button>
+        <Stack direction="row" spacing={2}>
+          <Button size="medium" onClick={fnLogout}>로그아웃</Button>
+      </Stack>
+     
           
         
       </List>

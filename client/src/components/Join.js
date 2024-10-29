@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { TextField, Button, Container, Typography, Box } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -13,6 +13,14 @@ function Join() {
   const nameRef = useRef();
   const birthRef = useRef();
   const navigate = useNavigate();
+
+  useEffect(()=>{
+    console.log(localStorage.getItem("token"));
+    if(localStorage.getItem("token") != null){
+      navigate("/main");
+    }
+    emailRef.current.focus();
+  }, []);
 
   
   async function fnJoin(){

@@ -24,6 +24,7 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import axios from 'axios';
+import { jwtDecode } from 'jwt-decode'; 
 
 // const mockFeeds = [
 //   {
@@ -47,20 +48,38 @@ function Feed() {
   const [selectedFeed, setSelectedFeed] = useState(null);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
+  const [userId, setuserId] = useState(''); 
 
-  useEffect(()=>{
-    async function fnFeeds(){
+  // 피드 목록을 가져오는 함수
+  const fnFeed = async () => { 
+    const token = localStorage.getItem("token"); 
+    try {
+      const res = await axios.get('http://localhost:3100/feed', { headers: { token } }); 
+      console.log(res.data); // 응답 내용 확인
+      if (res.data.success) {
+        setFeeds(res.data.list); 
+      } else {
+        console.log("서버에서 응답 오류:", res.data.message);
+      }
+    } catch (err) {
+      console.error("API 요청 중 오류 발생:", err); // 오류 정보를 더 자세히 출력 
+    }
+  };
+
+  // 컴포넌트가 마운트될 때 피드 목록과 사용자 정보를 가져옴
+  useEffect(() => { 
+    fnFeed(); 
+    console.log(feeds); // 피드 상태 확인
+    const token = localStorage.getItem("token"); 
+    if (token) { 
       try {
-        const res = await axios.get("http://localhost:3100/feed");
-        setFeeds(res.data);
-        
-      } catch (error) {
-        console.log("에러");
+        const decodedToken = jwtDecode(token); 
+        setuserId(decodedToken.userId); 
+      } catch (err) {
+        console.log("토큰 디코딩 에러:", err); 
       }
     }
-
-    fnFeeds();
-  }, [])
+  }, []); 
 
   const handleClickOpen = (feed) => {
     setSelectedFeed(feed);
@@ -81,7 +100,7 @@ function Feed() {
 
   const handleAddComment = () => {
     if (newComment.trim()) {
-      setComments([...comments, { id: 'currentUser', text: newComment }]); // 댓글 작성자 아이디 추가
+      setComments([...comments, { id: userId || 'currentUser', text: newComment }]); // 댓글 작성자 아이디 추가
       setNewComment('');
     }
   };
@@ -98,11 +117,12 @@ function Feed() {
         <Grid2 container spacing={3}>
           {feeds.map((feed) => (
             <Grid2 xs={12} sm={6} md={4} key={feed.id}>
+              {feed.content}
               <Card>
                 <CardMedia
                   component="img"
                   height="200"
-                  image={feed.image}
+                  image={feed.img_path}
                   alt={feed.title}
                   onClick={() => handleClickOpen(feed)}
                   style={{ cursor: 'pointer' }}
