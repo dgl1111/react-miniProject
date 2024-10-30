@@ -55,7 +55,7 @@ const Register = () => {
       });
 
       alert(res.data.message);
-      navigate("/main");
+      navigate("/mypage");
       
     } catch (error) {
       console.log("등록 중 오류", error);

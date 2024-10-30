@@ -34,9 +34,18 @@ const storage = multer.diskStorage({
                 return res.json({ success: false, message: '서버 오류가 발생했습니다.' });;
             }
 
-            res.json({ success: true, list : results }); 
+          // 피드 개수 쿼리 추가
+          const countQuery = 'SELECT COUNT(*) AS count FROM tbl_feed';
+          connection.query(countQuery, (err, countResult) => {
+            if (err) {
+              console.error('개수 쿼리 실행 실패:', err);
+              return res.json({ success: false, message: '서버 오류가 발생했습니다.' });
+            }
+
+            res.json({ success: true, list: results});
+          });
         });
-    })
+      })
 
     .post(upload.array('images'), (req, res) => {
       console.log(req.files); // 파일 로그 확인
@@ -75,24 +84,37 @@ const storage = multer.diskStorage({
       });
     });
 
-    router.route("/:email")
-    .delete((req, res)=>{
-      const email = req.params.email;
-      const query = 'DELETE FROM TBL_FEED WHERE email = ? ';
+    router.route("/:id").delete((req, res) => {
+      const feedId = req.params.id;
     
-      connection.query(query, [email], (err, results) => {
+      // tbl_feed_img에서 feed_id에 해당하는 이미지 삭제
+      const deleteImgQuery = `
+        DELETE I FROM tbl_feed_img I
+        INNER JOIN TBL_FEED F ON I.feed_id = F.id
+        WHERE F.id = ?`;
+    
+      connection.query(deleteImgQuery, [feedId], (err, imgResults) => {
         if (err) {
-          return res.json({success : false, message : "db 오류"});
-        };
-
-        res.json({ success: true, message: '삭제 됨!' });
-        
+          console.error('이미지 삭제 실패:', err);
+          return res.json({ success: false, message: '이미지 삭제 실패' });
+        }
+    
+        // 이제 tbl_feed에서 해당 피드를 삭제
+        const deleteFeedQuery = 'DELETE FROM TBL_FEED WHERE id = ?';
+        connection.query(deleteFeedQuery, [feedId], (err, feedResults) => {
+          if (err) {
+            console.error('피드 삭제 실패:', err);
+            return res.json({ success: false, message: '피드 삭제 실패' });
+          }
+    
+          res.json({ success: true, message: '피드 및 관련 이미지가 삭제되었습니다.' });
+        });
       });
     })
 
     .put((req, res)=>{
-        const email = req.params.email;
-        const query = 'UPDATE TBL_FEED SET favorite = favorite + 1 WHERE email = ? ';
+        const id = req.params.id;
+        const query = 'UPDATE TBL_FEED SET favorite = favorite + 1 WHERE id = ? ';
     
         connection.query(query, [email], (err, results) => {
         if (err) {

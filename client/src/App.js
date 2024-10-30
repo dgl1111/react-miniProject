@@ -9,6 +9,7 @@ import Register from './components/Register';
 import MyPage from './components/MyPage';
 import NotPage from './components/NotPage';
 import Menu from './components/Menu'; // Menu로 변경
+import Main from './components/Main';
 
 function App() {
   const location = useLocation();
@@ -20,12 +21,13 @@ function App() {
       {!isAuthPage && <Menu />} {/* 로그인과 회원가입 페이지가 아닐 때만 Menu 렌더링 */}
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <Routes>
-          <Route path="/" element={<Feed />} />
+          <Route path="/feed" element={<Feed />} />
           <Route path="/join" element={<Join />} />
           <Route path="/login" element={<Login />} />
           <Route path="/logout" element={<Logout />} />
           <Route path="/register" element={<Register />} />
           <Route path="/mypage" element={<MyPage />} />
+          <Route path="/main" element={<Main />} />
           <Route path="*" element={<NotPage />} />
         </Routes>
       </Box>

@@ -12,7 +12,7 @@ function Login() {
   useEffect(()=>{
     console.log(localStorage.getItem("token"));
     if(localStorage.getItem("token") != null){
-      navigate("/main");
+      navigate("/mypage");
     }
     emailRef.current.focus();
   }, []);
@@ -27,7 +27,7 @@ function Login() {
         if(res.data.success){
           console.log(res.data);
           localStorage.setItem("token", res.data.token);
-          navigate("/main")
+          navigate("/mypage")
         }else{
           alert("다시")
         }

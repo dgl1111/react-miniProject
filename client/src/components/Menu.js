@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Drawer, List, ListItem, ListItemText, Typography, Toolbar, ListItemIcon } from '@mui/material';
 import { Home, Add, AccountCircle } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
@@ -10,9 +10,11 @@ import Stack from '@mui/material/Stack';
 
 function Menu() {
   const navigate = useNavigate();
+  const [isLogin, setIsLogin] = useState(!!localStorage.getItem("token"));
 
   function fnLogout(){
     localStorage.clear();
+    setIsLogin(false);
     navigate("/main");
 }
 
@@ -34,7 +36,7 @@ function Menu() {
         SNS 메뉴
       </Typography>
       <List>
-        <ListItem button component={Link} to="/">
+        <ListItem button component={Link} to="/feed">
           <ListItemIcon>
             <Home />
           </ListItemIcon>
@@ -53,7 +55,11 @@ function Menu() {
           <ListItemText primary="마이페이지" />
         </ListItem>
         <Stack direction="row" spacing={2}>
-          <Button size="medium" onClick={fnLogout}>로그아웃</Button>
+          {isLogin ? (
+              <Button size="medium" onClick={fnLogout}>로그아웃</Button>
+            ) : (
+              <Button size="medium" component={Link} to="/login">로그인</Button>
+          )}
       </Stack>
      
           

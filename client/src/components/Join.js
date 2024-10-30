@@ -17,7 +17,7 @@ function Join() {
   useEffect(()=>{
     console.log(localStorage.getItem("token"));
     if(localStorage.getItem("token") != null){
-      navigate("/main");
+      navigate("/mypage");
     }
     emailRef.current.focus();
   }, []);

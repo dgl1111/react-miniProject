@@ -122,16 +122,29 @@ const ROUND = 10;
       const {email} = req.body;
       //console.log(email);
         const query = 'SELECT * FROM TBL_USER WHERE email = ?';
+        const postCountQuery = 'SELECT COUNT(*) AS count FROM TBL_FEED WHERE email = ?';
+        
         connection.query(query,[email], (err, results) => {
             if (err) {
                 console.error('쿼리 실행 실패:', err);
                 // res.status(500).send('서버 오류');
                 return;
             }
-            res.json( {success: true, list : results[0] }); 
+
+            connection.query(postCountQuery, [email], (err, countResults) => {
+              if (err) {
+                console.error('게시물 개수 쿼리 실행 실패:', err);
+                return res.status(500).json({ success: false, message: '서버 오류' });
+              }
+        
+              const totalCount = countResults[0].count;
+        
+            res.json( {success: true, list : results[0],totalCount: totalCount // 게시물 개수 포함 }); 
+          });
         });
+      });
     });
-   
+    
 
 
 

@@ -25,37 +25,24 @@ import {
 import CloseIcon from '@mui/icons-material/Close';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode'; 
-
-// const mockFeeds = [
-//   {
-//     id: 1,
-//     title: '게시물 1',
-//     description: '이것은 게시물 1의 설명입니다.',
-//     image: 'https://images.unsplash.com/photo-1551963831-b3b1ca40c98e',
-//   },
-//   {
-//     id: 2,
-//     title: '게시물 2',
-//     description: '이것은 게시물 2의 설명입니다.',
-//     image: 'https://images.unsplash.com/photo-1521747116042-5a810fda9664',
-//   },
-//   // 추가 피드 데이터
-// ];
+import DeleteIcon from '@mui/icons-material/Delete';
+import { useNavigate } from 'react-router-dom';
 
 function Feed() {
   const [feeds, setFeeds] = useState([]);
   const [open, setOpen] = useState(false);
-  const [selectedFeed, setSelectedFeed] = useState(null);
+  const [selectedFeed, setSelectedFeed] = useState([]);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
   const [userId, setuserId] = useState(''); 
+  const navigate = useNavigate();
 
   // 피드 목록을 가져오는 함수
   const fnFeed = async () => { 
     const token = localStorage.getItem("token"); 
     try {
       const res = await axios.get('http://localhost:3100/feed', { headers: { token } }); 
-      console.log(res.data); // 응답 내용 확인
+      console.log("res.data =>", res.data); // 응답 내용 확인
       if (res.data.success) {
         setFeeds(res.data.list); 
       } else {
@@ -69,19 +56,41 @@ function Feed() {
   // 컴포넌트가 마운트될 때 피드 목록과 사용자 정보를 가져옴
   useEffect(() => { 
     fnFeed(); 
-    console.log(feeds); // 피드 상태 확인
     const token = localStorage.getItem("token"); 
     if (token) { 
       try {
         const decodedToken = jwtDecode(token); 
         setuserId(decodedToken.userId); 
       } catch (err) {
-        console.log("토큰 디코딩 에러:", err); 
+        console.error("API 요청 중 오류 발생:", err);
       }
     }
   }, []); 
 
+  const handleDelete = async (feedId) => {
+    if (!window.confirm("삭제하시겠습니까?")) {
+      return;
+    }
+    
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.delete(`http://localhost:3100/feed/${feedId}`, { headers: { token } });
+      if (res.data.success) {
+        alert("삭제되었습니다.");
+        handleClose(); // 모달창 닫기
+        window.location.reload();
+        
+      } else {
+        alert("삭제 실패: " + res.data.message);
+      }
+    } catch (err) {
+      console.error("삭제 중 오류 발생:", err);
+      alert("삭제 중 오류 발생");
+    }
+  };
+
   const handleClickOpen = (feed) => {
+    console.log("Selected Feed=>", feed)
     setSelectedFeed(feed);
     setOpen(true);
     setComments([
@@ -106,32 +115,40 @@ function Feed() {
   };
 
   return (
-    <Container maxWidth="md">
-      <AppBar position="static">
-        <Toolbar>
-          <Typography variant="h6">SNS</Typography>
+    <Container sx={{ width: '698px', maxWidth: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+      {/* <AppBar position="static" sx={{ backgroundColor: 'transparent', boxShadow: 'none' }}>
+        <Toolbar sx={{ padding: 0, margin: 0 }}>
+          <Typography variant="h6" sx={{ color: 'black' }}>게시물</Typography>
         </Toolbar>
-      </AppBar>
+      </AppBar> */}
 
-      <Box mt={4}>
-        <Grid2 container spacing={3}>
+      <Box mt={4} sx={{ flex: 1, width: '100%' }}>
+        <Grid2 container spacing={3} sx={{ justifyContent: 'flex-start' }}>
           {feeds.map((feed) => (
-            <Grid2 xs={12} sm={6} md={4} key={feed.id}>
-              {feed.content}
-              <Card>
+            <Grid2 xs={12} sm={6} md={4} key={feed.id} sx={{ display: 'flex', justifyContent: 'flex-start' }}>
+              <Card sx={{ width: '200px', height: '300px', display: 'flex', flexDirection: 'column'}}>
                 <CardMedia
                   component="img"
-                  height="200"
-                  image={feed.img_path}
-                  alt={feed.title}
+                  height="250"
+                  image={`http://localhost:3100/${feed.img_path}`}
                   onClick={() => handleClickOpen(feed)}
-                  style={{ cursor: 'pointer' }}
+                  //style={{ cursor: 'pointer'}}
+                  sx={{
+                    cursor: 'pointer',
+                    objectFit: 'cover',
+                    width: '100%',
+                    height: '100%',
+                    margin: 0, // 모든 여백을 0으로 설정
+                    alignSelf: 'flex-start', // 왼쪽 정렬
+                    display: 'block', // 블록 요소로 설정하여 왼쪽 정렬
+
+                  }}
                 />
-                <CardContent>
+                {/* <CardContent>
                   <Typography variant="body2" color="textSecondary">
-                    {feed.title}
+                  {feed.content}
                   </Typography>
-                </CardContent>
+                </CardContent> */}
               </Card>
             </Grid2>
           ))}
@@ -139,30 +156,29 @@ function Feed() {
       </Box>
 
       <Dialog open={open} onClose={handleClose} fullWidth maxWidth="lg"> {/* 모달 크기 조정 */}
-        <DialogTitle>
-          {selectedFeed?.title}
-          <IconButton
-            edge="end"
-            color="inherit"
-            onClick={handleClose}
-            aria-label="close"
-            sx={{ position: 'absolute', right: 8, top: 8 }}
-          >
-            <CloseIcon />
-          </IconButton>
-        </DialogTitle>
+        <IconButton
+          edge="end"
+          color="inherit"
+          onClick={handleClose}
+          aria-label="close"
+          sx={{ position: 'absolute', right: 8, top: 8 }}
+        >
+          <CloseIcon />
+        </IconButton>
         <DialogContent sx={{ display: 'flex' }}>
           <Box sx={{ flex: 1 }}>
             <Typography variant="body1">{selectedFeed?.description}</Typography>
-            {selectedFeed?.image && (
+            {selectedFeed && selectedFeed.img_path && (
               <img
-                src={selectedFeed.image}
-                alt={selectedFeed.title}
-                style={{ width: '100%', marginTop: '10px' }}
+                src={`http://localhost:3100/${selectedFeed.img_path}`}
+                alt={selectedFeed.content}
+                style={{ width: '80%', marginTop: '10px' }}
               />
             )}
+            <DialogTitle>
+            {selectedFeed?.content}
+            </DialogTitle>
           </Box>
-
           <Box sx={{ width: '300px', marginLeft: '20px' }}>
             <Typography variant="h6">댓글</Typography>
             <List>
@@ -192,11 +208,15 @@ function Feed() {
             </Button>
           </Box>
         </DialogContent>
-        <DialogActions>
+          <IconButton onClick={() => handleDelete(selectedFeed?.feed_id)} sx={{ marginTop: 2 }}>
+            <DeleteIcon />
+          </IconButton>
+        
+        {/* <DialogActions>
           <Button onClick={handleClose} color="primary">
             닫기
           </Button>
-        </DialogActions>
+        </DialogActions> */}
       </Dialog>
     </Container>
   );
